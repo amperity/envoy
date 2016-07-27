@@ -43,4 +43,131 @@
   "Definition for how the sentry should behave in various situations."
   {})
 
-; ...
+
+; TODO: behavior setters
+
+
+
+;; ## Environment Map
+
+(def accesses
+  "Atom containing access counts for all environment maps."
+  (atom {}))
+
+
+(deftype EnvironmentMap
+  [config _meta]
+
+  java.lang.Object
+
+  (toString
+    [this]
+    (str "EnvironmentMap " config))
+
+  (equals
+    [this that]
+    (boolean
+      (or (identical? this that)
+          (when (identical? (class this) (class that))
+            (= config (.config ^EnvironmentMap that))))))
+
+  (hashCode
+    [this]
+    (hash [(class this) config]))
+
+
+  clojure.lang.IObj
+
+  (meta
+    [this]
+    _meta)
+
+  (withMeta
+    [this meta-map]
+    (EnvironmentMap. config meta-map))
+
+
+  clojure.lang.IFn
+
+  (invoke
+    [this k]
+    (.valAt this k))
+
+  (invoke
+    [this k not-found]
+    (.valAt this k not-found))
+
+
+  clojure.lang.ILookup
+
+  (valAt
+    [this k]
+    (.valAt this k nil))
+
+  (valAt
+    [this k not-found]
+    (swap! accesses update k (fnil inc 0))
+    (get config k not-found))
+
+
+  clojure.lang.IPersistentMap
+
+  (count
+    [this]
+    (count config))
+
+  (empty
+    [this]
+    (EnvironmentMap. (empty config) _meta))
+
+  (cons
+    [this element]
+    (EnvironmentMap. (cons config element) _meta))
+
+  (equiv
+    [this that]
+    (.equals this that))
+
+  (containsKey
+    [this k]
+    (contains? config k))
+
+  (entryAt
+    [this k]
+    (let [v (.valAt this k this)]
+      (when-not (identical? this v)
+        (clojure.lang.MapEntry. k v))))
+
+  (seq
+    [this]
+    (seq config))
+
+  (iterator
+    [this]
+    (clojure.lang.RT/iter (seq this)))
+
+  (assoc
+    [this k v]
+    (EnvironmentMap. (assoc config k v) _meta))
+
+  (without
+    [this k]
+    (EnvironmentMap. (dissoc config k) _meta)))
+
+
+(defmethod print-method EnvironmentMap
+  [v ^java.io.Writer w]
+  (.write w (str v)))
+
+
+;; Remove automatic constructor function.
+(ns-unmap *ns* '->EnvironmentMap)
+
+
+(defn env-map
+  "Constructs a new environment map."
+  ([]
+   (env-map {}))
+  ([config]
+   {:pre [(map? config)]}
+   (EnvironmentMap. config nil)))
