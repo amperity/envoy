@@ -39,6 +39,10 @@
 
 ;; ## Sentry Behavior
 
+(def accesses
+  "Atom containing access counts for all environment maps."
+  (atom {}))
+
 (def behavior
   "Definition for how the sentry should behave in various situations."
   {})
@@ -47,13 +51,26 @@
 ; TODO: behavior setters
 
 
+(defn- on-access!
+  "Called when a variable is accessed in the environment map with the key and
+  original (string) config value. Returns the processed value."
+  [k v]
+  ; TODO: check for definition?
+  (swap! accesses update k (fnil inc 0))
+  ; TODO: parse?
+  v)
+
+
+(defn- on-override!
+  "Called when a variable is overridden in the environment map with the key,
+  old value, and new value. Returns the new value to use."
+  [k v1 v2]
+  ; TODO: behavior
+  v2)
+
+
 
 ;; ## Environment Map
-
-(def accesses
-  "Atom containing access counts for all environment maps."
-  (atom {}))
-
 
 (deftype EnvironmentMap
   [config _meta]
@@ -106,8 +123,7 @@
 
   (valAt
     [this k not-found]
-    (swap! accesses update k (fnil inc 0))
-    (get config k not-found))
+    (on-access! k (get config k not-found)))
 
 
   clojure.lang.IPersistentMap
@@ -144,14 +160,17 @@
 
   (iterator
     [this]
-    (clojure.lang.RT/iter (seq this)))
+    (clojure.lang.RT/iter (seq config)))
 
   (assoc
     [this k v]
-    (EnvironmentMap. (assoc config k v) _meta))
+    (EnvironmentMap.
+      (update config k #(on-override! k % v))
+      _meta))
 
   (without
     [this k]
+    (on-override! k (get config k) nil)
     (EnvironmentMap. (dissoc config k) _meta)))
 
 
