@@ -1,6 +1,6 @@
-(defproject mvxcvi/environ-sentry "0.1.0-SNAPSHOT"
+(defproject amperity/environ-sentry "0.1.0-SNAPSHOT"
   :description "Environment configuration in Clojure."
-  :url "https://github.com/greglook/environ-sentry"
+  :url "https://github.com/amperity/environ-sentry"
 
   :deploy-branches ["master"]
 
