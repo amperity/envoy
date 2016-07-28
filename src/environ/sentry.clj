@@ -63,30 +63,51 @@
   "Atom containing access counts for all environment maps."
   (atom {}))
 
+
 (def behavior
   "Definition for how the sentry should behave in various situations."
-  {})
+  {:undeclared-access :warn
+   :undeclared-override :warn})
 
 
-; TODO: behavior setters
+(defn set-behavior!
+  "Set the behavior of the sentry in various situations."
+  [& {:as opts}]
+  (alter-var-root #'behavior merge opts))
 
 
 (defn- on-access!
   "Called when a variable is accessed in the environment map with the key and
   original (string) config value. Returns the processed value."
   [k v]
-  ; TODO: check for definition?
+  ; Update access counter.
   (swap! accesses update k (fnil inc 0))
-  ; TODO: parse?
-  v)
+  ; Look up variable definition.
+  (let [definition (get known-vars k)]
+    (when-not definition
+      (case (:undeclared-access behavior)
+        :warn (log/warn "Access to undeclared env variable" k)
+        :throw (throw (ex-info (str "Access to undeclared env variable " k)
+                               {:var k}))
+        nil))
+    ; TODO: parsing logic
+    v))
 
 
 (defn- on-override!
   "Called when a variable is overridden in the environment map with the key,
   old value, and new value. Returns the new value to use."
   [k v1 v2]
-  ; TODO: behavior
-  v2)
+  ; Look up variable definition.
+  (let [definition (get known-vars k)]
+    (when-not definition
+      (case (:undeclared-override behavior)
+        :warn (log/warn "Overriding undeclared env variable" k)
+        :throw (throw (ex-info (str "Overriding undeclared env variable " k)
+                               {:var k}))
+        nil))
+    ; TODO: parsing logic
+    v2))
 
 
 
