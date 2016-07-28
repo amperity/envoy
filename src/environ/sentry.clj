@@ -86,10 +86,12 @@
   (let [definition (get known-vars k)]
     (when-not definition
       (case (:undeclared-access behavior)
-        :warn (log/warn "Access to undeclared env variable" k)
-        :throw (throw (ex-info (str "Access to undeclared env variable " k)
+        nil nil
+        :warn  (log/warn "Access to undeclared env variable" k)
+        :abort (throw (ex-info (str "Access to undeclared env variable " k)
                                {:var k}))
-        nil))
+        (log/error "Unknown behavior type for undeclared-access:"
+                   (:undeclared-access behavior))))
     ; TODO: parsing logic
     v))
 
@@ -102,10 +104,12 @@
   (let [definition (get known-vars k)]
     (when-not definition
       (case (:undeclared-override behavior)
-        :warn (log/warn "Overriding undeclared env variable" k)
-        :throw (throw (ex-info (str "Overriding undeclared env variable " k)
+        nil    nil
+        :warn  (log/warn "Overriding undeclared env variable" k)
+        :abort (throw (ex-info (str "Overriding undeclared env variable " k)
                                {:var k}))
-        nil))
+        (log/error "Unknown behavior type for undeclared-override:"
+                   (:undeclared-override behavior))))
     ; TODO: parsing logic
     v2))
 
