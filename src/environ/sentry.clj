@@ -3,7 +3,22 @@
     [clojure.java.io :as io]
     [clojure.tools.logging :as log]
     [clojure.set :as set]
+    [clojure.string :as str]
     [environ.core :as e]))
+
+
+;; ## Value Parsing
+
+(def value-types
+  "Map of type keys to parsing functions."
+  {:boolean (fn parse-bool [x]
+              (case (str/lower-case (str x))
+                ("" "0" "f" "false" "n" "no") false
+                true))
+   :integer (fn parse-int [x] (Long/parseLong (str x)))
+   :decimal (fn parse-dec [x] (Double/parseDouble (str x)))
+   :list    (fn parse-list [x] (str/split x #","))})
+
 
 
 ;; ## Var Declaration
@@ -20,6 +35,11 @@
   (when-let [extant (get known-vars env-key)]
     (log/errorf "Environment variable definition for %s in %s:%d is overriding existing definition in %s:%d"
                 env-key (:ns properties) (:line properties) (:ns extant) (:line extant)))
+  (when-let [vtype (:type properties)]
+    (when-not (contains? value-types vtype)
+      (throw (IllegalArgumentException.
+               (str "Environment variable " env-key " declares unsupported type "
+                    vtype " not in (" (str/join " " (keys value-types) ")"))))))
   (-> #'known-vars
       (alter-var-root assoc env-key properties)
       (get env-key)))
