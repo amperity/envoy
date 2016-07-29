@@ -108,8 +108,8 @@
   ; Look up variable definition.
   (if-let [definition (get known-vars k)]
     (if (some? v)
-      ; Parse the value for known types.
-      (if-let [parser (type-parsers (:type definition))]
+      ; Parse the string value for known types.
+      (if-let [parser (and (string? v) (type-parsers (:type definition)))]
         (parser v)
         v)
       ; Check if the var has missing behavior.
