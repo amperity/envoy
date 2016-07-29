@@ -252,7 +252,6 @@
    (EnvironmentMap. config nil)))
 
 
-(defonce
-  ^{:doc "Global environment map as loaded by `environ.core`."}
-  env
+(def env
+  "Global environment map as loaded by `environ.core`."
   (env-map environ/env))
