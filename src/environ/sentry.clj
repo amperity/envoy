@@ -97,16 +97,14 @@
   (swap! accesses update k (fnil inc 0))
   ; Look up variable definition.
   (if-let [definition (get known-vars k)]
-    (as-> v value
-      ; Check if the var has missing behavior.
-      (if (nil? value)
-        (behave! ::missing-access (:missing definition)
-                 "Access to env variable %s which has no value" k)
-        value)
+    (if (some? v)
       ; Parse the value for known types.
       (if-let [parser (type-parsers (:type definition))]
         (parser v)
-        v))
+        v)
+      ; Check if the var has missing behavior.
+      (behave! ::missing-access (:missing definition)
+               "Access to env variable %s which has no value" k))
     ; No definition found for key.
     (do
       (behave! ::undeclared-access (:undeclared-access behavior)
@@ -123,6 +121,7 @@
     (when-not definition
       (behave! ::undeclared-override (:undeclared-override behavior)
                "Overriding undeclared env variable %s" k))
+    ; TODO: figure out how to render this based on type
     v2))
 
 
@@ -245,5 +244,7 @@
   ([]
    (env-map {}))
   ([config]
-   {:pre [(map? config)]}
+   {:pre [(map? config)
+          (every? keyword? (keys config))
+          (every? string? (vals config))]}
    (EnvironmentMap. config nil)))
