@@ -38,10 +38,10 @@
     (log/errorf "Environment variable definition for %s in %s:%d is overriding existing definition in %s:%d"
                 env-key (:ns properties) (:line properties) (:ns extant) (:line extant)))
   (when-let [vtype (:type properties)]
-    (when-not (contains? value-types vtype)
+    (when-not (contains? type-parsers vtype)
       (throw (IllegalArgumentException.
                (str "Environment variable " env-key " declares unsupported type "
-                    vtype " not in (" (str/join " " (keys value-types) ")"))))))
+                    vtype " not in (" (str/join " " (keys type-parsers) ")"))))))
   (-> #'known-vars
       (alter-var-root assoc env-key properties)
       (get env-key)))
@@ -78,6 +78,17 @@
   (alter-var-root #'behavior merge opts))
 
 
+(defn- behave!
+  "Standard function for interpreting behavior settings."
+  [behavior setting message var-key & format-args]
+  (case setting
+    nil    nil
+    :warn  (log/warn (apply format message var-key format-args))
+    :abort (throw (ex-info (apply format message var-key format-args)
+                           {:type behavior, :var var-key}))
+    (log/error "Unknown behavior type for" behavior (pr-str setting))))
+
+
 (defn- on-access!
   "Called when a variable is accessed in the environment map with the key and
   original (string) config value. Returns the processed value."
@@ -89,13 +100,8 @@
     (as-> v value
       ; Check if the var has missing behavior.
       (if (nil? value)
-        (case (:missing definition)
-          nil    nil
-          :warn  (log/warn "Access to env variable" k "which has no value")
-          :abort (throw (ex-info (str "Access to env variable " k "which has no value")
-                                 {:type ::missing-access, :var k}))
-          (log/error "Unknown behavior type for missing:"
-                     (pr-str (:missing definition))))
+        (behave! ::missing-access (:missing definition)
+                 "Access to env variable %s which has no value" k)
         value)
       ; Parse the value for known types.
       (if-let [parser (type-parsers (:type definition))]
@@ -103,13 +109,8 @@
         v))
     ; No definition found for key.
     (do
-      (case (:undeclared-access behavior)
-        nil    nil
-        :warn  (log/warn "Access to undeclared env variable" k)
-        :abort (throw (ex-info (str "Access to undeclared env variable " k)
-                               {:type ::undeclared-access, :var k}))
-        (log/error "Unknown behavior type for undeclared-access:"
-                   (pr-str (:undeclared-access behavior))))
+      (behave! ::undeclared-access (:undeclared-access behavior)
+               "Access to undeclared env variable %s" k)
       v)))
 
 
@@ -120,13 +121,8 @@
   ; Look up variable definition.
   (let [definition (get known-vars k)]
     (when-not definition
-      (case (:undeclared-override behavior)
-        nil    nil
-        :warn  (log/warn "Overriding undeclared env variable" k)
-        :abort (throw (ex-info (str "Overriding undeclared env variable " k)
-                               {:type ::undeclared-override, :var k}))
-        (log/error "Unknown behavior type for undeclared-override:"
-                   (:undeclared-override behavior))))
+      (behave! ::undeclared-override (:undeclared-override behavior)
+               "Overriding undeclared env variable %s" k))
     v2))
 
 
