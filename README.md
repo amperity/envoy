@@ -71,6 +71,20 @@ nil
  :secret-key 2}
 ```
 
+### Linting
+
+If you're using `lein-env` or `boot-env` to pass environment configuration from
+your build tool to the process, you can use the `-main` function in
+`environ.sentry` to check that you're not providing values for any undeclared
+variables. To run the lint task, use:
+
+```
+lein run -m environ.sentry lint [namespace ...]
+```
+
+Any namespaces provided will be loaded before the check runs, in case you need
+to pull in variable definitions.
+
 
 ## Configuration
 
@@ -121,13 +135,6 @@ values:
 | `:integer` | Parse the value as an integer. |
 | `:decimal` | Parse the value as a floating point number. |
 | `:list`    | Treats the value as a comma-separated list of strings. |
-
-
-## TODO
-
-- validate that environ files from `.lein-env` don't contain undocumented vars
-- -main function that can run the lint task above (needs to load all the code though?)
-- report defined variables which are never accessed?
 
 
 ## License

@@ -255,3 +255,56 @@
 (def env
   "Global environment map as loaded by `environ.core`."
   (env-map environ/env))
+
+
+
+;; ## Environment Linting
+
+(defn lint-env-file
+  "Inspects the configuration in the given env file (as written by `lein-environ`)
+  and warns about undeclared variable definitions."
+  [behavior target]
+  (when-let [config (@#'environ/read-env-file target)]
+    (println "Linting environment configuration file" (str target))
+    (when-let [unknown-vars (not-empty (set/difference
+                                         (set (keys config))
+                                         (set (keys known-vars))))]
+      (behave! ::undeclared-config behavior
+               "File %2$s configures undeclared env variables: %1$s"
+               unknown-vars target))))
+
+
+(defn- print-error
+  "Gracefully handles a raised exception and writes messages to stderr. The
+  `message` does not need to be newline delimited."
+  [^Throwable ex message & format-args]
+  (.write *err* (str (apply format message format-args) "\n"))
+  (when-let [reason (and ex (.getMessage ex))]
+    (.write *err* (str reason "\n")))
+  (when-let [data (ex-data ex)]
+    (.write *err* (prn-str data)))
+  (.flush *err*))
+
+
+(defn -main
+  "Runs the lint configuration check."
+  [command & args]
+  (case command
+    "lint"
+      (let [namespaces args]
+        (doseq [code-ns namespaces]
+          (try
+            (printf "Loading namespace %s ...\n" code-ns)
+            (require (symbol code-ns))
+            (catch Exception ex
+              (print-error ex "Failure loading namespace %s!" code-ns)
+              (System/exit 3))))
+        (try
+          (lint-env-file :abort ".lein-env")
+          (lint-env-file :abort (io/resource ".boot-env"))
+          (catch Exception ex
+            (print-error ex "Configuration files have errors")
+            (System/exit 1))))
+    (do (print-error nil (str "Unknown environ-sentry command: "
+                              (pr-str command) "\n"))
+        (System/exit 2))))
