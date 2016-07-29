@@ -9,9 +9,11 @@
 
 ;; ## Value Parsing
 
-(def value-types
+(def type-parsers
   "Map of type keys to parsing functions."
-  {:boolean (fn parse-bool [x]
+  {:string  str
+   :keyword keyword
+   :boolean (fn parse-bool [x]
               (case (str/lower-case (str x))
                 ("" "0" "f" "false" "n" "no") false
                 true))
