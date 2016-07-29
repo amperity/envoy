@@ -51,7 +51,7 @@ A quick overview of sentry usage:
 ; Variables can have :missing behavior for situations where the var must not
 ; resolve to nil:
 => (defenv :secret-key
-     "Essential for accessing the safe!"
+     "Essential for accessing the data!"
      :missing :warn)
 
 ; Calling without a default value triggers:
@@ -62,6 +62,13 @@ nil
 ; Providing a default is okay though:
 => (env :secret-key "53CR37")
 "53CR37"
+
+; Still watching all those accesses!
+=> @env/accesses
+{:http-port 1
+ :user 1
+ :foo 1
+ :secret-key 2}
 ```
 
 
