@@ -5,8 +5,9 @@
             :url "http://www.apache.org/licenses/LICENSE-2.0"}
 
   :deploy-branches ["master"]
+  :pedantic? :abort
 
   :dependencies
-  [[org.clojure/clojure "1.8.0"]
+  [[org.clojure/clojure "1.8.0" :scope "provided"]
    [org.clojure/tools.logging "0.3.1"]
    [environ "1.0.3"]])
