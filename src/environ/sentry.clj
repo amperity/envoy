@@ -107,11 +107,10 @@
         nil    nil
         :warn  (log/warn "Access to undeclared env variable" k)
         :abort (throw (ex-info (str "Access to undeclared env variable " k)
-                               {:var k}))
+                               {:type ::undeclared-access, :var k}))
         (log/error "Unknown behavior type for undeclared-access:"
-                   (:undeclared-access behavior))))
-    ; TODO: parsing logic
-    v))
+                   (pr-str (:undeclared-access behavior))))
+      v)))
 
 
 (defn- on-override!
@@ -125,10 +124,9 @@
         nil    nil
         :warn  (log/warn "Overriding undeclared env variable" k)
         :abort (throw (ex-info (str "Overriding undeclared env variable " k)
-                               {:var k}))
+                               {:type ::undeclared-override, :var k}))
         (log/error "Unknown behavior type for undeclared-override:"
                    (:undeclared-override behavior))))
-    ; TODO: parsing logic
     v2))
 
 
