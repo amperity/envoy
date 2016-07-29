@@ -85,10 +85,26 @@
   ; Update access counter.
   (swap! accesses update k (fnil inc 0))
   ; Look up variable definition.
-  (let [definition (get known-vars k)]
-    (when-not definition
+  (if-let [definition (get known-vars k)]
+    (as-> v value
+      ; Check if the var has missing behavior.
+      (if (nil? value)
+        (case (:missing definition)
+          nil    nil
+          :warn  (log/warn "Access to env variable" k "which has no value")
+          :abort (throw (ex-info (str "Access to env variable " k "which has no value")
+                                 {:type ::missing-access, :var k}))
+          (log/error "Unknown behavior type for missing:"
+                     (pr-str (:missing definition))))
+        value)
+      ; Parse the value for known types.
+      (if-let [parser (type-parsers (:type definition))]
+        (parser v)
+        v))
+    ; No definition found for key.
+    (do
       (case (:undeclared-access behavior)
-        nil nil
+        nil    nil
         :warn  (log/warn "Access to undeclared env variable" k)
         :abort (throw (ex-info (str "Access to undeclared env variable " k)
                                {:var k}))
