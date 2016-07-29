@@ -5,6 +5,7 @@ A Clojure library compatible with [environ](https://github.com/weavejester/envir
 which adds tracking of which environment variables are referenced, whitelisting,
 descriptions, and more!
 
+
 ## Usage
 
 A quick overview of sentry usage:
@@ -63,6 +64,7 @@ nil
 "53CR37"
 ```
 
+
 ## Configuration
 
 ### Behaviors
@@ -113,8 +115,15 @@ values:
 | `:decimal` | Parse the value as a floating point number. |
 | `:list`    | Treats the value as a comma-separated list of strings. |
 
+
 ## TODO
 
 - validate that environ files from `.lein-env` don't contain undocumented vars
 - -main function that can run the lint task above (needs to load all the code though?)
 - report defined variables which are never accessed?
+
+
+## License
+
+Licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file
+for rights and restrictions.
