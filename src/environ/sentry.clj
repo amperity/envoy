@@ -4,7 +4,7 @@
     [clojure.tools.logging :as log]
     [clojure.set :as set]
     [clojure.string :as str]
-    [environ.core :as e]))
+    [environ.core :as environ]))
 
 
 ;; ## Value Parsing
@@ -248,3 +248,9 @@
           (every? keyword? (keys config))
           (every? string? (vals config))]}
    (EnvironmentMap. config nil)))
+
+
+(defonce
+  ^{:doc "Global environment map as loaded by `environ.core`."}
+  env
+  (env-map environ/env))

@@ -46,6 +46,21 @@ A quick overview of sentry usage:
 => (assoc env :foo "bar")
 ; WARNING: Overriding undeclared env variable :foo
 {:foo "bar", :http-port ...}
+
+; Variables can have :missing behavior for situations where the var must not
+; resolve to nil:
+=> (defenv :secret-key
+     "Essential for accessing the safe!"
+     :missing :warn)
+
+; Calling without a default value triggers:
+=> (env :secret-key)
+; WARNING: Access to env variable :secret-key which has no value
+nil
+
+; Providing a default is okay though:
+=> (env :secret-key "53CR37")
+"53CR37"
 ```
 
 ## Configuration
