@@ -68,27 +68,35 @@
                             (every? number? (vals %)))))
 
 
-(def behavior
+(def behaviors
   "Definition for how the sentry should behave in various situations."
   {:undeclared-access :warn
-   :undeclared-override :warn})
+   :undeclared-override :warn
+   :undeclared-config :abort})
 
 
 (defn set-behavior!
   "Set the behavior of the sentry in various situations."
   [& {:as opts}]
-  (alter-var-root #'behavior merge opts))
+  (alter-var-root #'behaviors merge opts))
 
 
 (defn- behave!
   "Standard function for interpreting behavior settings."
-  [behavior setting message var-key & format-args]
-  (case setting
-    nil    nil
-    :warn  (log/warn (apply format message var-key format-args))
-    :abort (throw (ex-info (apply format message var-key format-args)
-                           {:type behavior, :var var-key}))
-    (log/error "Unknown behavior type for" behavior (pr-str setting))))
+  ([behavior message var-key]
+   (behave!
+     behavior
+     (behaviors (keyword (name behavior)))
+     var-key
+     message))
+  ([behavior setting message var-key & format-args]
+   (case setting
+     nil    nil
+     :warn  (log/warnf (apply format message var-key format-args))
+     :abort (throw (ex-info (apply format message var-key format-args)
+                            {:type behavior, :var var-key}))
+     (log/errorf "Unknown behavior type for %s %s"
+                 behavior (pr-str setting)))))
 
 
 (defn- on-access!
@@ -109,8 +117,7 @@
                "Access to env variable %s which has no value" k))
     ; No definition found for key.
     (do
-      (behave! ::undeclared-access (:undeclared-access behavior)
-               "Access to undeclared env variable %s" k)
+      (behave! ::undeclared-access "Access to undeclared env variable %s" k)
       v)))
 
 
@@ -121,9 +128,7 @@
   ; Look up variable definition.
   (let [definition (get known-vars k)]
     (when-not definition
-      (behave! ::undeclared-override (:undeclared-override behavior)
-               "Overriding undeclared env variable %s" k))
-    ; TODO: figure out how to render this based on type
+      (behave! ::undeclared-override "Overriding undeclared env variable %s" k))
     v2))
 
 
@@ -263,13 +268,13 @@
 (defn lint-env-file
   "Inspects the configuration in the given env file (as written by `lein-environ`)
   and warns about undeclared variable definitions."
-  [behavior target]
+  [target]
   (when-let [config (@#'environ/read-env-file target)]
     (println "Linting environment configuration file" (str target))
     (when-let [unknown-vars (not-empty (set/difference
                                          (set (keys config))
                                          (set (keys known-vars))))]
-      (behave! ::undeclared-config behavior
+      (behave! ::undeclared-config
                "File %2$s configures undeclared env variables: %1$s"
                unknown-vars target))))
 

@@ -31,7 +31,7 @@ A quick overview of sentry usage:
 "pjfry"
 
 ; The warning was logged because of the behavior setting:
-=> (env/behavior :undeclared-access)
+=> (env/behaviors :undeclared-access)
 :warn
 
 ; We can also set it to be stricter:
@@ -41,7 +41,7 @@ A quick overview of sentry usage:
 ; ExceptionInfo Access to undeclared env variable :foo  clojure.core/ex-info
 
 ; Overrides have a behavior setting too:
-=> (env/behavior :undeclared-override)
+=> (env/behaviors :undeclared-override)
 :warn
 
 => (assoc env :foo "bar")
@@ -90,21 +90,22 @@ to pull in variable definitions.
 
 ### Behaviors
 
-Sentry supports a few behavior settings which control what happens in various
-situations. All behavior options support the following values:
+Sentry supports behavior settings which control what happens in various
+situations. There are a few global behaviors:
 
-| Behavior     | Description |
+| Behavior              | Trigger     |
+| --------------------- | ----------- |
+| *undeclared-access*   | An undeclared variable is looked up in the environment map. |
+| *undeclared-override* | An undeclared variable is associated into the environment map. |
+| *undeclared-config*   | An environment file provides a value for an undeclared variable. |
+
+All behavior options support the following values:
+
+| Setting      | Description |
 | ------------ | ----------- |
 | `nil`        | No behavior. |
 | `:warn`      | Log a warning. |
 | `:abort`     | Throw an exception. |
-
-There are two global behaviors:
-
-- `:undeclared-access` triggers when a variable is looked up in the environment
-  map which has not been defined.
-- `:undeclared-override` triggers when an undefined variable is associated into
-  the environment map.
 
 ### Variable Definitions
 
@@ -119,7 +120,7 @@ Variables can be declared using the `defenv` macro or its helper function
 | `:type`        | Value type to parse the variable as. See below. |
 | `:missing`     | Behavior if the variable is accessed with no configured value. |
 
-The first three are added automatically as part of the macro.
+The first three are added automatically as part of the `defenv` macro.
 
 ### Value Types
 
