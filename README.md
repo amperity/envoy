@@ -98,6 +98,21 @@ Variables can be declared using the `defenv` macro or its helper function
 
 The first three are added automatically as part of the macro.
 
+### Value Types
+
+By default, all variables are treated like `:string` types, which directly reads
+the value from the environment. Other types apply parsing functions to the
+values:
+
+| Type       | Definition |
+| ---------- | ---------- |
+| `:string`  | Normal string variable. |
+| `:keyword` | Parse the value as a keyword (without the leading colon). |
+| `:boolean` | Converts 'bool-esque' values such as `""` `"0"`, `"f"`, `"no"`, and so on to `false` and everything else to `true`. |
+| `:integer` | Parse the value as an integer. |
+| `:decimal` | Parse the value as a floating point number. |
+| `:list`    | Treats the value as a comma-separated list of strings. |
+
 ## TODO
 
 - validate that environ files from `.lein-env` don't contain undocumented vars
