@@ -63,7 +63,9 @@
 
 (def accesses
   "Atom containing access counts for all environment maps."
-  (atom {}))
+  (atom {} :validator #(and (map? %)
+                            (every? keyword? (keys %))
+                            (every? number? (vals %)))))
 
 
 (def behavior
