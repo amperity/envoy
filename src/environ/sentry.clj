@@ -7,22 +7,17 @@
     [environ.core :as environ]))
 
 
+;; ## Definition Schema
+
 (def behavior-types
   "Set of valid values for behavior types."
   #{nil :warn :abort})
 
 
-(def type-parsers
-  "Map of type keys to parsing functions."
-  {:string  str
-   :keyword keyword
-   :boolean (fn parse-bool [x]
-              (case (str/lower-case (str x))
-                ("" "0" "f" "false" "n" "no") false
-                true))
-   :integer (fn parse-int [x] (Long/parseLong (str x)))
-   :decimal (fn parse-dec [x] (Double/parseDouble (str x)))
-   :list    (fn parse-list [x] (str/split x #","))})
+(def value-types
+  "Set of valid value type keys."
+  #{:string :keyword :boolean
+    :integer :decimal :list})
 
 
 (def variable-schema
@@ -30,7 +25,7 @@
   {:ns symbol?
    :line number?
    :description string?
-   :type type-parsers
+   :type value-types
    :missing behavior-types})
 
 
@@ -43,17 +38,30 @@
   {})
 
 
+(defn- declared-location
+  "Returns a string naming the location an env variable was declared."
+  [definition]
+  (let [ns-sym (:ns definition)
+        ns-line (:line definition)]
+    (some-> ns-sym (cond-> ns-line (str ":" ns-line)))))
+
+
 (defn declare-env-var!
-  "Helper function for the `defenv` macro."
+  "Helper function for the `defenv` macro. Declares properties for an
+  environment variable, checking various schema attributes."
   [env-key properties]
   (when-let [extant (get known-vars env-key)]
-    (log/errorf "Environment variable definition for %s in %s:%d is overriding existing definition in %s:%d"
-                env-key (:ns properties) (:line properties) (:ns extant) (:line extant)))
-  (when-let [vtype (:type properties)]
-    (when-not (contains? type-parsers vtype)
-      (throw (IllegalArgumentException.
-               (str "Environment variable " env-key " declares unsupported type "
-                    vtype " not in (" (str/join " " (keys type-parsers) ")"))))))
+    (log/errorf "Environment variable definition for %s at %s is overriding existing definition from %s"
+                env-key (declared-location properties) (declared-location extant)))
+  (doseq [[prop-key prop-val] properties]
+    (if-let [pred (variable-schema prop-key)]
+      ; Check value against schema predicate.
+      (when-not (pred prop-val)
+        (log/warnf "Environment variable %s (%s) declares invalid value %s for property %s (failed %s)"
+                   env-key (declared-location properties) (pr-str prop-val)
+                   prop-key pred))
+      ; Declaring a property not in the schema.
+      (log/debugf "Environment variable %s (%s:%s) declares ex-schema property %s")))
   (-> #'known-vars
       (alter-var-root assoc env-key properties)
       (get env-key)))
@@ -68,6 +76,59 @@
             :ns '~(symbol (str *ns*))
             :line ~(:line (meta &form))
             :description ~description)))
+
+
+
+;; ## Type Handling
+
+(def falsey-strings
+  "Set of strings which are considered 'falsey' values for a boolean
+  environment variable. Strings are downcased before checking this set."
+  #{"" "0" "f" "false" "n" "no"})
+
+
+(def ^:private type-predicates
+  "Map of type keys to predicate functions which test whether a value satisfies
+  the given type."
+  {:string string?
+   :keyword keyword?
+   :boolean (some-fn true? false?)
+   :integer integer?
+   :decimal decimal?
+   :list sequential?})
+
+
+(def ^:private type-parsers
+  {:string  str
+   :keyword keyword
+   :boolean (comp not falsey-strings str/lower-case str)
+   :integer #(Long/parseLong %)
+   :decimal #(Double/parseDouble %)
+   :list    #(str/split % #",")})
+
+
+(defn parse
+  "Parse a value based on its type."
+  [type-key value]
+  {:pre [(keyword? type-key)]}
+  (when (some? value)
+    (let [tester (type-predicates type-key)
+          parser (type-parsers type-key)]
+      (cond
+        ; Value already has the right type.
+        (and tester (tester value))
+          value
+        ; Value is not a string, so we can't parse it.
+        (not (string? value))
+          (throw (ex-info (str "Cannot parse non-string value to " (name type-key))
+                          {:type type-key, :value value}))
+        ; Parse value with parsing function.
+        parser
+          (parser value)
+        ; No reasonable approach, so throw an error.
+        :else
+          (throw (ex-info (str "Cannot parse value without parsing function for " (name type-key))
+                          {:type type-key, :value value}))))))
 
 
 
@@ -123,8 +184,8 @@
   (if-let [definition (get known-vars k)]
     (if (some? v)
       ; Parse the string value for known types.
-      (if-let [parser (and (string? v) (type-parsers (:type definition)))]
-        (parser v)
+      (if-let [type-key (:type definition)]
+        (parse type-key v)
         v)
       ; Check if the var has missing behavior.
       (behave! ::missing-access (:missing definition)
