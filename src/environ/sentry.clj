@@ -7,7 +7,10 @@
     [environ.core :as environ]))
 
 
-;; ## Value Parsing
+(def behavior-types
+  "Set of valid values for behavior types."
+  #{nil :warn :abort})
+
 
 (def type-parsers
   "Map of type keys to parsing functions."
@@ -20,6 +23,15 @@
    :integer (fn parse-int [x] (Long/parseLong (str x)))
    :decimal (fn parse-dec [x] (Double/parseDouble (str x)))
    :list    (fn parse-list [x] (str/split x #","))})
+
+
+(def variable-schema
+  "Simple key->predicate schema for variable definitions."
+  {:ns symbol?
+   :line number?
+   :description string?
+   :type type-parsers
+   :missing behavior-types})
 
 
 
@@ -78,6 +90,8 @@
 (defn set-behavior!
   "Set the behavior of the sentry in various situations."
   [& {:as opts}]
+  {:pre [(every? behaviors (keys opts))
+         (every? behavior-types (vals opts))]}
   (alter-var-root #'behaviors merge opts))
 
 

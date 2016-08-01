@@ -93,11 +93,11 @@ to pull in variable definitions.
 Sentry supports behavior settings which control what happens in various
 situations. There are a few global behaviors:
 
-| Behavior              | Trigger     |
-| --------------------- | ----------- |
-| *undeclared-access*   | An undeclared variable is looked up in the environment map. |
-| *undeclared-override* | An undeclared variable is associated into the environment map. |
-| *undeclared-config*   | An environment file provides a value for an undeclared variable. |
+| Behavior                | Trigger     |
+| ----------------------- | ----------- |
+| **undeclared-access**   | An undeclared variable is looked up in the environment map. |
+| **undeclared-override** | An undeclared variable is associated into the environment map. |
+| **undeclared-config**   | An environment file provides a value for an undeclared variable. |
 
 All behavior options support the following values:
 
