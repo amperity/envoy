@@ -277,7 +277,32 @@
 
 
 
-;; ## Environment Linting
+;; ## Build Commands
+
+(defn- print-error
+  "Gracefully handles a raised exception and writes messages to stderr. The
+  `message` does not need to be newline delimited."
+  [^Throwable ex message & format-args]
+  (let [out ^java.io.Writer *err*]
+    (.write out (str (apply format message format-args) "\n"))
+    (when-let [reason (and ex (.getMessage ex))]
+      (.write out (str reason "\n")))
+    (when-let [data (ex-data ex)]
+      (.write out (prn-str data)))
+    (.flush out)))
+
+
+(defn- load-namespaces
+  "Requires a sequence of namespaces to load variable definitions."
+  [namespaces]
+  (doseq [code-ns namespaces]
+    (try
+      (printf "Loading namespace %s ...\n" code-ns)
+      (require (symbol code-ns))
+      (catch Exception ex
+        (print-error ex "Failure loading namespace %s!" code-ns)
+        (System/exit 3)))))
+
 
 (defn lint-env-file
   "Inspects the configuration in the given env file (as written by `lein-environ`)
@@ -293,37 +318,44 @@
                unknown-vars target))))
 
 
-(defn- print-error
-  "Gracefully handles a raised exception and writes messages to stderr. The
-  `message` does not need to be newline delimited."
-  [^Throwable ex message & format-args]
-  (.write *err* (str (apply format message format-args) "\n"))
-  (when-let [reason (and ex (.getMessage ex))]
-    (.write *err* (str reason "\n")))
-  (when-let [data (ex-data ex)]
-    (.write *err* (prn-str data)))
-  (.flush *err*))
+(defn print-env-report
+  "Prints out a table of all the known environment variables, their types, and definitions."
+  []
+  (if (empty? known-vars)
+    (println "No defined environment variables!")
+    (do
+      (println "| Name | Type | Declaration | Description |")
+      (println "| ---- | ---- | ----------- | ----------- |")
+      (doseq [[var-name definition] (sort-by (comp (juxt :ns :line) val)
+                                             known-vars)]
+        (printf "| %s | %s | %s:%s | %s |\n"
+                var-name (name (:type definition :string))
+                (:ns definition "?") (:line definition "?")
+                (:description definition))))))
 
 
 (defn -main
   "Runs the lint configuration check."
-  [command & args]
+  [& [command & args]]
   (case command
+    nil
+    (do (print-error nil "Usage: lein run -m environ.sentry <lint|report> [args...]")
+        (System/exit 2))
+
     "lint"
-      (let [namespaces args]
-        (doseq [code-ns namespaces]
-          (try
-            (printf "Loading namespace %s ...\n" code-ns)
-            (require (symbol code-ns))
-            (catch Exception ex
-              (print-error ex "Failure loading namespace %s!" code-ns)
-              (System/exit 3))))
-        (try
-          (lint-env-file :abort ".lein-env")
-          (lint-env-file :abort (io/resource ".boot-env"))
-          (catch Exception ex
-            (print-error ex "Configuration files have errors")
-            (System/exit 1))))
+    (do
+      (load-namespaces args)
+      (try
+        (lint-env-file :abort ".lein-env")
+        (lint-env-file :abort (io/resource ".boot-env"))
+        (catch Exception ex
+          (print-error ex "Configuration files have errors")
+          (System/exit 1))))
+
+    "report"
+    (do (load-namespaces args)
+        (print-env-report))
+
     (do (print-error nil (str "Unknown environ-sentry command: "
                               (pr-str command) "\n"))
         (System/exit 2))))
