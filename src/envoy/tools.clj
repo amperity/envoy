@@ -4,6 +4,7 @@
     [clojure.java.io :as io]
     [clojure.set :as set]
     [environ.core :as environ]
+    [envoy.behavior :refer [behave!]]
     [envoy.core :as envoy]))
 
 
@@ -41,10 +42,9 @@
     (when-let [unknown-vars (not-empty (set/difference
                                          (set (keys config))
                                          (set (keys envoy/known-vars))))]
-      (envoy/behave!
-        ::undeclared-config
-        "File %2$s configures undeclared env variables: %1$s"
-        unknown-vars target))))
+      (behave! ::undeclared-config
+               "File %2$s configures undeclared env variables: %1$s"
+               unknown-vars target))))
 
 
 (defn print-env-report
@@ -68,7 +68,7 @@
   [& [command & args]]
   (case command
     nil
-    (do (print-error nil "Usage: lein run -m environ.sentry <lint|report> [args...]")
+    (do (print-error nil (str "Usage: lein run -m " *ns* " <lint|report> [args...]"))
         (System/exit 2))
 
     "lint"

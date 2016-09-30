@@ -3,20 +3,9 @@
   (:require
     [clojure.tools.logging :as log]
     [clojure.string :as str]
-    [environ.core :as environ]))
-
-
-;; ## Definition Schema
-
-(def behavior-types
-  "Set of valid values for behavior types."
-  #{nil :warn :abort})
-
-
-(def value-types
-  "Set of valid value type keys."
-  #{:string :keyword :boolean
-    :integer :decimal :list})
+    [environ.core :as environ]
+    [envoy.behavior :as behavior :refer [behave!]]
+    [envoy.types :as types]))
 
 
 (def variable-schema
@@ -24,8 +13,8 @@
   {:ns symbol?
    :line number?
    :description string?
-   :type value-types
-   :missing behavior-types})
+   :type types/value-types
+   :missing behavior/behavior-types})
 
 
 
@@ -50,8 +39,9 @@
   environment variable, checking various schema attributes."
   [env-key properties]
   (when-let [extant (get known-vars env-key)]
-    (log/errorf "Environment variable definition for %s at %s is overriding existing definition from %s"
-                env-key (declared-location properties) (declared-location extant)))
+    (when (not= (:ns extant) (:ns properties))
+      (log/errorf "Environment variable definition for %s at %s is overriding existing definition from %s"
+                  env-key (declared-location properties) (declared-location extant))))
   (doseq [[prop-key prop-val] properties]
     (if-let [pred (variable-schema prop-key)]
       ; Check value against schema predicate.
@@ -78,59 +68,6 @@
 
 
 
-;; ## Type Handling
-
-(def falsey-strings
-  "Set of strings which are considered 'falsey' values for a boolean
-  environment variable. Strings are downcased before checking this set."
-  #{"" "0" "f" "false" "n" "no"})
-
-
-(def ^:private type-predicates
-  "Map of type keys to predicate functions which test whether a value satisfies
-  the given type."
-  {:string string?
-   :keyword keyword?
-   :boolean (some-fn true? false?)
-   :integer integer?
-   :decimal float?
-   :list sequential?})
-
-
-(def ^:private type-parsers
-  {:string  str
-   :keyword keyword
-   :boolean (comp not falsey-strings str/lower-case str)
-   :integer #(Long/parseLong %)
-   :decimal #(Double/parseDouble %)
-   :list    #(str/split % #",")})
-
-
-(defn parse
-  "Parse a value based on its type."
-  [type-key value]
-  {:pre [(keyword? type-key)]}
-  (when (some? value)
-    (let [tester (type-predicates type-key)
-          parser (type-parsers type-key)]
-      (cond
-        ; Value already has the right type.
-        (and tester (tester value))
-          value
-        ; Value is not a string, so we can't parse it.
-        (not (string? value))
-          (throw (ex-info (str "Cannot parse non-string value to " (name type-key))
-                          {:type type-key, :value value}))
-        ; Parse value with parsing function.
-        parser
-          (parser value)
-        ; No reasonable approach, so throw an error.
-        :else
-          (throw (ex-info (str "Cannot parse value without parsing function for " (name type-key))
-                          {:type type-key, :value value}))))))
-
-
-
 ;; ## Access Behavior
 
 (def accesses
@@ -138,39 +75,6 @@
   (atom {} :validator #(and (map? %)
                             (every? keyword? (keys %))
                             (every? number? (vals %)))))
-
-
-(def behaviors
-  "Definition for how the library should behave in various situations."
-  {:undeclared-access :warn
-   :undeclared-override :warn
-   :undeclared-config :abort})
-
-
-(defn set-behavior!
-  "Set the behavior of the library in various situations."
-  [& {:as opts}]
-  {:pre [(every? behaviors (keys opts))
-         (every? behavior-types (vals opts))]}
-  (alter-var-root #'behaviors merge opts))
-
-
-(defn ^:no-doc behave!
-  "Standard function for interpreting behavior settings."
-  ([behavior message var-key]
-   (behave!
-     behavior
-     (behaviors (keyword (name behavior)))
-     var-key
-     message))
-  ([behavior setting message var-key & format-args]
-   (case setting
-     nil    nil
-     :warn  (log/warnf (apply format message var-key format-args))
-     :abort (throw (ex-info (apply format message var-key format-args)
-                            {:type behavior, :var var-key}))
-     (log/errorf "Unknown behavior type for %s %s"
-                 behavior (pr-str setting)))))
 
 
 (defn- on-access!
@@ -184,7 +88,7 @@
     (if (some? v)
       ; Parse the string value for known types.
       (if-let [type-key (:type definition)]
-        (parse type-key v)
+        (types/parse type-key v)
         v)
       ; Check if the var has missing behavior.
       (behave! ::missing-access (:missing definition)
