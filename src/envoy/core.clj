@@ -91,11 +91,11 @@
         (types/parse type-key v)
         v)
       ; Check if the var has missing behavior.
-      (behave! ::missing-access (:missing definition)
+      (behave! :missing-access (:missing definition)
                "Access to env variable %s which has no value" k))
     ; No definition found for key.
     (do
-      (behave! ::undeclared-access "Access to undeclared env variable %s" k)
+      (behave! :undeclared-access "Access to undeclared env variable %s" k)
       v)))
 
 
@@ -106,7 +106,7 @@
   ; Look up variable definition.
   (let [definition (get known-vars k)]
     (when-not definition
-      (behave! ::undeclared-override "Overriding undeclared env variable %s" k))
+      (behave! :undeclared-override "Overriding undeclared env variable %s" k))
     v2))
 
 
