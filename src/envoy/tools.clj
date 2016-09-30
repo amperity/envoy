@@ -89,7 +89,6 @@
     (do (load-namespaces args)
         (print-env-report))
 
-    (do (print-error nil (str "Unknown environ-sentry command: "
-                              (pr-str command) "\n"))
+    (do (print-error nil (str "Unknown envoy command: " (pr-str command) "\n"))
         (System/exit 2)))
   (System/exit 0))
