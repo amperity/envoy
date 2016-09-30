@@ -1,5 +1,5 @@
-Environment Sentry
-==================
+Envoy
+=====
 
 A Clojure library compatible with [environ](https://github.com/weavejester/environ)
 which adds tracking of which environment variables are referenced, whitelisting,
@@ -8,10 +8,10 @@ descriptions, and more!
 
 ## Usage
 
-A quick overview of sentry usage:
+A quick overview of envoy usage:
 
 ```clojure
-=> (require '[environ.sentry :as env :refer [defenv env]])
+=> (require '[envoy.core :as env :refer [defenv env]])
 
 => (defenv :http-port
      "TCP port to run the HTTP server on."
@@ -21,7 +21,7 @@ A quick overview of sentry usage:
 => (env :http-port)
 8080
 
-; Sentry records variable access:
+; Envoy records variable access:
 => @env/accesses
 {:http-port 1}
 
@@ -90,7 +90,7 @@ to pull in variable definitions.
 
 ### Behaviors
 
-Sentry supports behavior settings which control what happens in various
+Envoy supports behavior settings which control what happens in various
 situations. There are a few global behaviors:
 
 | Behavior                | Trigger     |

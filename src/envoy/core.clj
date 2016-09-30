@@ -1,8 +1,7 @@
-(ns environ.sentry
+(ns envoy.core
+  "Core environment handling namespace."
   (:require
-    [clojure.java.io :as io]
     [clojure.tools.logging :as log]
-    [clojure.set :as set]
     [clojure.string :as str]
     [environ.core :as environ]))
 
@@ -94,7 +93,7 @@
    :keyword keyword?
    :boolean (some-fn true? false?)
    :integer integer?
-   :decimal decimal?
+   :decimal float?
    :list sequential?})
 
 
@@ -132,7 +131,7 @@
 
 
 
-;; ## Sentry Behavior
+;; ## Access Behavior
 
 (def accesses
   "Atom containing access counts for all environment maps."
@@ -142,21 +141,21 @@
 
 
 (def behaviors
-  "Definition for how the sentry should behave in various situations."
+  "Definition for how the library should behave in various situations."
   {:undeclared-access :warn
    :undeclared-override :warn
    :undeclared-config :abort})
 
 
 (defn set-behavior!
-  "Set the behavior of the sentry in various situations."
+  "Set the behavior of the library in various situations."
   [& {:as opts}]
   {:pre [(every? behaviors (keys opts))
          (every? behavior-types (vals opts))]}
   (alter-var-root #'behaviors merge opts))
 
 
-(defn- behave!
+(defn ^:no-doc behave!
   "Standard function for interpreting behavior settings."
   ([behavior message var-key]
    (behave!
@@ -321,7 +320,7 @@
 (ns-unmap *ns* '->EnvironmentMap)
 
 
-(defn env-map
+(defn ^:no-doc env-map
   "Constructs a new environment map."
   ([]
    (env-map {}))

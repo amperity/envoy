@@ -1,6 +1,6 @@
-(defproject amperity/environ-sentry "0.1.0-SNAPSHOT"
-  :description "Environment configuration in Clojure."
-  :url "https://github.com/amperity/environ-sentry"
+(defproject amperity/envoy "0.1.0-SNAPSHOT"
+  :description "Clojure environment configuration tracking."
+  :url "https://github.com/amperity/envoy"
   :license {:name "Apache License 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0"}
 
