@@ -31,17 +31,17 @@ A quick overview of envoy usage:
 "pjfry"
 
 ; The warning was logged because of the behavior setting:
-=> (env/behaviors :undeclared-access)
+=> (envoy.behavior/behaviors :undeclared-access)
 :warn
 
 ; We can also set it to be stricter:
-=> (env/set-behavior! :undeclared-access :abort)
+=> (envoy.behavior/set-behavior! :undeclared-access :abort)
 
 => (:foo env)
 ; ExceptionInfo Access to undeclared env variable :foo  clojure.core/ex-info
 
 ; Overrides have a behavior setting too:
-=> (env/behaviors :undeclared-override)
+=> (envoy.behavior/behaviors :undeclared-override)
 :warn
 
 => (assoc env :foo "bar")

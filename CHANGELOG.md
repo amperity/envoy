@@ -9,4 +9,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ...
 
-[Unreleased]: https://github.com/amperity/envoy/compare/0.0.0...HEAD
+## [0.1.0] - 2016-09-30
+
+Initial release.
+
+[Unreleased]: https://github.com/amperity/envoy/compare/0.1.0...HEAD
+[0.1.0]: https://github.com/amperity/envoy/releases/tag/0.1.0
