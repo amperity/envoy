@@ -75,11 +75,11 @@ nil
 
 If you're using `lein-env` or `boot-env` to pass environment configuration from
 your build tool to the process, you can use the `-main` function in
-`environ.sentry` to check that you're not providing values for any undeclared
+`envoy.tools` to check that you're not providing values for any undeclared
 variables. To run the lint task, use:
 
 ```
-lein run -m environ.sentry lint [namespace ...]
+lein run -m envoy.tools lint [namespace ...]
 ```
 
 Any namespaces provided will be loaded before the check runs, in case you need
