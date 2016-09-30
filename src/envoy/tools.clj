@@ -91,4 +91,5 @@
 
     (do (print-error nil (str "Unknown environ-sentry command: "
                               (pr-str command) "\n"))
-        (System/exit 2))))
+        (System/exit 2)))
+  (System/exit 0))
