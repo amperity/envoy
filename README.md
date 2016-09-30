@@ -5,6 +5,12 @@ A Clojure library compatible with [environ](https://github.com/weavejester/envir
 which adds tracking of which environment variables are referenced, whitelisting,
 descriptions, and more!
 
+## Installation
+
+Library releases are published on Clojars. To use the latest version with
+Leiningen, add the following to your project dependencies:
+
+[![Clojars Project](http://clojars.org/amperity/envoy/latest-version.svg)](http://clojars.org/amperity/envoy)
 
 ## Usage
 
