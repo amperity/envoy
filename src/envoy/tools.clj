@@ -5,7 +5,8 @@
     [clojure.set :as set]
     [environ.core :as environ]
     [envoy.behavior :refer [behave!]]
-    [envoy.core :as envoy]))
+    [envoy.core :as envoy]
+    [table.core :refer [table]]))
 
 
 (defn- print-error
@@ -52,15 +53,18 @@
   []
   (if (empty? envoy/known-vars)
     (println "No defined environment variables!")
-    (do
-      (println "| Name | Type | Declaration | Description |")
-      (println "| ---- | ---- | ----------- | ----------- |")
-      (doseq [[var-name definition] (sort-by (comp (juxt :ns :line) val)
-                                             envoy/known-vars)]
-        (printf "| %s | %s | %s:%s | %s |\n"
-                var-name (name (:type definition :string))
-                (:ns definition "?") (:line definition "?")
-                (:description definition))))))
+    (table
+      (->>
+        envoy/known-vars
+        (sort-by (comp (juxt :ns :line) val))
+        (map
+          (fn [[var-name definition]]
+            [var-name
+             (name (:type definition :string))
+             (str (:ns definition \?) \: (:line definition \?))
+             (:description definition)]))
+        (cons ["Name" "Type" "Declaration" "Description"]))
+      :style :github-markdown)))
 
 
 (defn -main

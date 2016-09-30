@@ -10,4 +10,5 @@
   :dependencies
   [[org.clojure/clojure "1.8.0" :scope "provided"]
    [org.clojure/tools.logging "0.3.1"]
-   [environ "1.0.3"]])
+   [environ "1.0.3"]
+   [table "0.5.0"]])
