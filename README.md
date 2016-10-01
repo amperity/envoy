@@ -91,27 +91,25 @@ lein run -m envoy.tools lint [namespace ...]
 Any namespaces provided will be loaded before the check runs, in case you need
 to pull in variable definitions.
 
+### Reporting
+
+Similarly, you can use the tools namespace to print out a report of the variable
+definitions known to envoy.
+
+```
+lein run -m envoy.tools report [namespace ...]
+```
+
+This will give you a table like the following:
+
+```
+| Name                 | Type    | Declaration                  | Description                         |
+|--------------------- | ------- | ---------------------------- | ------------------------------------|
+| :secret-key          | string  | example.data.crypto:187      | Essential for accessing the data!   |
+| :http-port           | integer | example.http:server:22       | TCP port to run the HTTP server on. |
+```
 
 ## Configuration
-
-### Behaviors
-
-Envoy supports behavior settings which control what happens in various
-situations. There are a few global behaviors:
-
-| Behavior                | Trigger     |
-| ----------------------- | ----------- |
-| **undeclared-access**   | An undeclared variable is looked up in the environment map. |
-| **undeclared-override** | An undeclared variable is associated into the environment map. |
-| **undeclared-config**   | An environment file provides a value for an undeclared variable. |
-
-All behavior options support the following values:
-
-| Setting      | Description |
-| ------------ | ----------- |
-| `nil`        | No behavior. |
-| `:warn`      | Log a warning. |
-| `:abort`     | Throw an exception. |
 
 ### Variable Definitions
 
@@ -143,6 +141,24 @@ values:
 | `:decimal` | Parse the value as a floating point number. |
 | `:list`    | Treats the value as a comma-separated list of strings. |
 
+### Behaviors
+
+Envoy supports behavior settings which control what happens in various
+situations. There are a few global behaviors:
+
+| Behavior                | Trigger     |
+| ----------------------- | ----------- |
+| **undeclared-access**   | An undeclared variable is looked up in the environment map. |
+| **undeclared-override** | An undeclared variable is associated into the environment map. |
+| **undeclared-config**   | An environment file provides a value for an undeclared variable. |
+
+All behavior options support the following values:
+
+| Setting      | Description |
+| ------------ | ----------- |
+| `nil`        | No behavior. |
+| `:warn`      | Log a warning. |
+| `:abort`     | Throw an exception. |
 
 ## License
 
