@@ -89,7 +89,8 @@ lein run -m envoy.tools lint [namespace ...]
 ```
 
 Any namespaces provided will be loaded before the check runs, in case you need
-to pull in variable definitions.
+to pull in variable definitions. Typically, you should provide the top-level
+namespace with the `-main` entry point into the code.
 
 ### Reporting
 
@@ -147,13 +148,14 @@ values:
 ### Behaviors
 
 Envoy supports behavior settings which control what happens in various
-situations. There are a few global behaviors:
+situations. There are a few different behaviors:
 
-| Behavior                | Trigger     |
-| ----------------------- | ----------- |
-| **undeclared-access**   | An undeclared variable is looked up in the environment map. |
-| **undeclared-override** | An undeclared variable is associated into the environment map. |
-| **undeclared-config**   | An environment file provides a value for an undeclared variable. |
+| Behavior                | Type     | Trigger     |
+| ----------------------- | -------- | ----------- |
+| **undeclared-access**   | global   | An undeclared variable is looked up in the environment map. |
+| **undeclared-override** | global   | An undeclared variable is associated into the environment map. |
+| **undeclared-config**   | global   | An environment file provides a value for an undeclared variable. |
+| **missing-access**      | variable | A variable is accessed without a default and is not present in the environment. |
 
 All behavior options support the following values:
 
