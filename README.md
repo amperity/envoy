@@ -1,6 +1,9 @@
 Envoy
 =====
 
+[![CircleCI](https://circleci.com/gh/amperity/envoy.svg?style=svg&circle-token=43f6c88e6aca5140c0da783c55138f281ef696fb)](https://circleci.com/gh/amperity/envoy)
+[![API codox](https://img.shields.io/badge/doc-API-blue.svg)](https://amperity.github.io/envoy/api/)
+
 A Clojure library compatible with [environ](https://github.com/weavejester/environ)
 which adds tracking of which environment variables are referenced, whitelisting,
 descriptions, and more!
