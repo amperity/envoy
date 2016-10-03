@@ -238,3 +238,11 @@
 (def env
   "Global default environment map as loaded by `environ.core`."
   (env-map environ/env))
+
+
+(defn set-env!
+  "Updates the global environment map with a new value for the given variable.
+  This should generally only be used from a REPL, and will not affect the actual
+  system environment!"
+  [var-key value]
+  (alter-var-root #'env assoc var-key value))

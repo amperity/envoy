@@ -75,6 +75,11 @@ nil
  :user 1
  :foo 1
  :secret-key 2}
+
+; Need to change a value from the REPL, but don't want to restart?
+=> (env/set-env! :http-port "8085")
+=> (env :http-port)
+8085
 ```
 
 ### Linting
