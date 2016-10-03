@@ -107,7 +107,7 @@ This will give you a table like the following:
 | Name                 | Type    | Declaration             | Description                         |
 |--------------------- | ------- | ------------------------| ------------------------------------|
 | :secret-key          | string  | example.data.crypto:187 | Essential for accessing the data!   |
-| :http-port           | integer | example.http:server:22  | TCP port to run the HTTP server on. |
+| :http-port           | integer | example.http.server:22  | TCP port to run the HTTP server on. |
 ```
 
 The table is in Github-compatible Markdown to make it easy to paste into
