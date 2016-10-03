@@ -1,4 +1,4 @@
-(ns envoy.behavior
+(ns envoy.check
   (:require
     [clojure.tools.logging :as log]
     [clojure.string :as str]))

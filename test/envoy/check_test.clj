@@ -1,7 +1,7 @@
-(ns envoy.behavior-test
+(ns envoy.check-test
   (:require
     [clojure.test :refer :all]
-    [envoy.behavior :refer :all]))
+    [envoy.check :refer :all]))
 
 
 (deftest behavior-types-var
@@ -26,7 +26,7 @@
         "value is :warn after setting")))
 
 
-(deftest behavior-settings
+(deftest behavior-checks
   (testing "lookup in map"
     (set-behavior! :undeclared-access nil)
     (is (nil? (behave! :undeclared-access "Undeclared access to %s" :foo))))

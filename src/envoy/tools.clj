@@ -4,7 +4,7 @@
     [clojure.java.io :as io]
     [clojure.set :as set]
     [environ.core :as environ]
-    [envoy.behavior :refer [behave!]]
+    [envoy.check :refer [behave!]]
     [envoy.core :as envoy]
     [table.core :refer [table]]))
 

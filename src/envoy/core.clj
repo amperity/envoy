@@ -4,7 +4,7 @@
     [clojure.tools.logging :as log]
     [clojure.string :as str]
     [environ.core :as environ]
-    [envoy.behavior :as behavior :refer [behave!]]
+    [envoy.check :as check :refer [behave!]]
     [envoy.types :as types]))
 
 
@@ -14,7 +14,7 @@
    :line number?
    :description string?
    :type types/value-types
-   :missing behavior/behavior-types})
+   :missing check/behavior-types})
 
 
 
