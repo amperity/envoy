@@ -7,7 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-...
+### Changed
+- Rename `envoy.behavior` ns to `envoy.check`.
+
+### Added
+- Add `envoy.core/set-env!` REPL helper function.
 
 ## [0.1.0] - 2016-09-30
 
