@@ -37,13 +37,13 @@
 (defn lint-env-file
   "Inspects the configuration in the given env file (as written by `lein-environ`)
   and warns about undeclared variable definitions."
-  [target]
+  [setting target]
   (when-let [config (@#'environ/read-env-file target)]
     (println "Linting environment configuration file" (str target))
     (when-let [unknown-vars (not-empty (set/difference
                                          (set (keys config))
                                          (set (keys envoy/known-vars))))]
-      (behave! ::undeclared-config
+      (behave! :undeclared-config setting
                "File %2$s configures undeclared env variables: %1$s"
                unknown-vars target))))
 
