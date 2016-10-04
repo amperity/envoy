@@ -77,6 +77,12 @@
                             (every? number? (vals %)))))
 
 
+(defn clear-accesses!
+  "Resets the variable accesses map to an empty state."
+  []
+  (swap! accesses empty))
+
+
 (defn- on-access!
   "Called when a variable is accessed in the environment map with the key and
   original (string) config value. Returns the processed value."

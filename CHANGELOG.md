@@ -7,7 +7,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-...
+### Added
+- Add `envoy.core/clear-accesses!` helper function.
 
 ## [0.2.0] - 2016-10-03
 
