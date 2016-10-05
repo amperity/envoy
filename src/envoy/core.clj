@@ -161,6 +161,13 @@
     [this k not-found]
     (.valAt this k not-found))
 
+  (applyTo
+    [this args]
+    (case (count args)
+      1 (.valAt this (first args))
+      2 (.valAt this (first args) (second args))
+      (throw (clojure.lang.ArityException. (count args) "EnvironmentMap.applyTo"))))
+
 
   clojure.lang.ILookup
 
