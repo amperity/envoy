@@ -258,4 +258,5 @@
   This should generally only be used from a REPL, and will not affect the actual
   system environment!"
   [var-key value & kvs]
-  (alter-var-root #'env #(apply assoc % var-key value kvs)))
+  (alter-var-root #'env #(apply assoc % var-key value kvs))
+  nil)
