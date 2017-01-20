@@ -16,6 +16,9 @@
   "Variable with attribute not in default schema."
   :secret true)
 
+(defenv :envoy-bad-type
+  "Re-declaring a variable.")
+
 
 (deftest env-declaration
   (is (contains? env/known-vars :envoy-test))
