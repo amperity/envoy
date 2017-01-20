@@ -1,4 +1,4 @@
-(defproject amperity/envoy "0.3.0-SNAPSHOT"
+(defproject amperity/envoy "0.3.0"
   :description "Clojure environment configuration tracking."
   :url "https://github.com/amperity/envoy"
   :license {:name "Apache License 2.0"
@@ -12,7 +12,7 @@
 
   :plugins
   [[lein-codox "0.9.5"]
-   [rfkm/lein-cloverage "1.0.8"]]
+   [lein-cloverage "1.0.9"]]
 
   :dependencies
   [[org.clojure/clojure "1.8.0" :scope "provided"]

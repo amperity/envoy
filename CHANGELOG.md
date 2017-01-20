@@ -9,6 +9,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ...
 
+## [0.3.0] - 2017-01-19
+
+### Added
+- Add `envoy.core/declare-env-attr!` helper to add new attribute schemas to
+  envoy.
+
+### Fixed
+- Fixed bug with `defenv` attributes outside the normal schema when `TRACE`
+  logging is enabled.
+
 ## [0.2.1] - 2016-10-05
 
 ### Added
@@ -30,7 +40,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 Initial release.
 
-[Unreleased]: https://github.com/amperity/envoy/compare/0.2.1...HEAD
+[Unreleased]: https://github.com/amperity/envoy/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/amperity/envoy/compare/0.2.1...0.3.0
 [0.2.1]: https://github.com/amperity/envoy/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/amperity/envoy/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/amperity/envoy/releases/tag/0.1.0
