@@ -8,6 +8,12 @@
     [envoy.types :as types]))
 
 
+(def known-vars
+  "Map of environment keywords to a definition map which may contain a
+  `:description` and optionally a `:type` for auto-coercion."
+  {})
+
+
 (def variable-schema
   "Simple key->predicate schema for variable definitions."
   {:ns symbol?
@@ -20,37 +26,52 @@
 
 ;; ## Var Declaration
 
-(def known-vars
-  "Map of environment keywords to a definition map which may contain a
-  `:description` and optionally a `:type` for auto-coercion."
-  {})
-
-
 (defn- declared-location
   "Returns a string naming the location an env variable was declared."
-  [definition]
-  (let [ns-sym (:ns definition)
-        ns-line (:line definition)]
+  [properties]
+  (let [ns-sym (:ns properties)
+        ns-line (:line properties)]
     (some-> ns-sym (cond-> ns-line (str ":" ns-line)))))
+
+
+(defn- validate-attr!
+  "Checks whether the given variable property matches the declared schema. No
+  effect if no schema is found. Returns true if the value is valid."
+  [env-key prop-key properties]
+  (if-let [pred (and (contains? properties prop-key)
+                     (variable-schema prop-key))]
+    (let [value (get properties prop-key)]
+      (if (pred value)
+        true
+        (log/warnf
+          "Environment variable %s (%s) declares invalid value %s for property %s (failed %s)"
+          env-key (declared-location properties) (pr-str value) prop-key pred)))
+    true))
+
+
+(defn declare-env-attr!
+  "Helper function which adds elements to the `variable-schema` map."
+  [prop-key pred]
+  ; Check existing variables.
+  (doseq [[env-key properties] known-vars]
+    (validate-attr! env-key prop-key properties))
+  ; Update schema map.
+  (alter-var-root #'variable-schema assoc prop-key pred))
 
 
 (defn declare-env-var!
   "Helper function for the `defenv` macro. Declares properties for an
-  environment variable, checking various schema attributes."
+  environment variable, checking various schema properties."
   [env-key properties]
+  ; Check for previous declarations.
   (when-let [extant (get known-vars env-key)]
     (when (not= (:ns extant) (:ns properties))
       (log/errorf "Environment variable definition for %s at %s is overriding existing definition from %s"
                   env-key (declared-location properties) (declared-location extant))))
-  (doseq [[prop-key prop-val] properties]
-    (if-let [pred (variable-schema prop-key)]
-      ; Check value against schema predicate.
-      (when-not (pred prop-val)
-        (log/warnf "Environment variable %s (%s) declares invalid value %s for property %s (failed %s)"
-                   env-key (declared-location properties) (pr-str prop-val)
-                   prop-key pred))
-      ; Declaring a property not in the schema.
-      (log/debugf "Environment variable %s (%s:%s) declares ex-schema property %s")))
+  ; Check property schemas.
+  (doseq [prop-key (keys properties)]
+    (validate-attr! env-key prop-key properties))
+  ; Update known variables map.
   (-> #'known-vars
       (alter-var-root assoc env-key properties)
       (get env-key)))

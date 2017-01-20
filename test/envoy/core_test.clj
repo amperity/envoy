@@ -1,12 +1,20 @@
 (ns envoy.core-test
   (:require
     [clojure.test :refer :all]
-    [envoy.core :as env]))
+    [envoy.core :as env :refer [defenv]]))
 
 
-(env/defenv :envoy-test
+(defenv :envoy-test
   "Test environment variable."
   :type :integer)
+
+(defenv :envoy-bad-type
+  "Variable with a bad type."
+  :type :foo)
+
+(defenv :envoy-ex-schema
+  "Variable with attribute not in default schema."
+  :secret true)
 
 
 (deftest env-declaration
