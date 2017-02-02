@@ -213,7 +213,7 @@
 
   (cons
     [this element]
-    (EnvironmentMap. (cons config element) _meta))
+    (EnvironmentMap. (conj config element) _meta))
 
   (equiv
     [this that]
