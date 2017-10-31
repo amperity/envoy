@@ -225,9 +225,8 @@
 
   (entryAt
     [this k]
-    (let [v (.valAt this k this)]
-      (when-not (identical? this v)
-        (clojure.lang.MapEntry. k v))))
+    (when-some [v (.valAt this k)]
+      (clojure.lang.MapEntry. k v)))
 
   (seq
     [this]
