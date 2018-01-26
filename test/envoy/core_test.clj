@@ -23,15 +23,6 @@
   "Specifying a special parsing fn."
   :parser clojure.edn/read-string)
 
-(ns envoy.core-test.special)
-(def parser clojure.string/lower-case)
-
-(ns envoy.core-test)
-
-(defenv :envoy-custom-ns-parser
-  "Specifying a special parsing fn."
-  :parser envoy.core-test.special/parser)
-
 
 (deftest env-declaration
   (is (contains? env/known-vars :envoy-test))
@@ -45,7 +36,4 @@
     (is (= {:a 1} (env/env :envoy-custom-parser))))
   (do
     (env/set-env! :envoy-custom-parser "{:a {:b [\"1\" 2.0 \\3 \" \"]}}")
-    (is (= {:a {:b ["1" 2.0 \3 " "]}} (env/env :envoy-custom-parser))))
-  (do
-    (env/set-env! :envoy-custom-ns-parser "APascalCase")
-    (is (= "apascalcase" (env/env :envoy-custom-ns-parser)))))
+    (is (= {:a {:b ["1" 2.0 \3 " "]}} (env/env :envoy-custom-parser)))))
