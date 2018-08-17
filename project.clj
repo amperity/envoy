@@ -12,7 +12,8 @@
 
   :plugins
   [[lein-codox "0.9.5"]
-   [lein-cloverage "1.0.9"]]
+   [lein-cloverage "1.0.9"]
+   [lein-environ "1.1.0"]]
 
   :dependencies
   [[org.clojure/clojure "1.9.0" :scope "provided"]
@@ -29,6 +30,7 @@
   :profiles
   {:test
    {:dependencies [[commons-logging "1.2"]]
+    :env {:undeclared-var "Hi I'm undeclared"}
     :jvm-opts ["-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.NoOpLog"]}
 
    :coverage

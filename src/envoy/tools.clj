@@ -48,23 +48,27 @@
                unknown-vars target))))
 
 
+(defn- env-report-table
+  []
+  (when-not (empty? envoy/known-vars)
+    (->>
+      envoy/known-vars
+      (sort-by (comp (juxt :ns :line) val))
+      (map
+        (fn [[var-name definition]]
+          [var-name
+           (name (:type definition :string))
+           (str (:ns definition \?) \: (:line definition \?))
+           (:description definition)]))
+      (cons ["Name" "Type" "Declaration" "Description"]))))
+
+
 (defn print-env-report
   "Prints out a table of all the known environment variables, their types, and definitions."
   []
-  (if (empty? envoy/known-vars)
-    (println "No defined environment variables!")
-    (table
-      (->>
-        envoy/known-vars
-        (sort-by (comp (juxt :ns :line) val))
-        (map
-          (fn [[var-name definition]]
-            [var-name
-             (name (:type definition :string))
-             (str (:ns definition \?) \: (:line definition \?))
-             (:description definition)]))
-        (cons ["Name" "Type" "Declaration" "Description"]))
-      :style :github-markdown)))
+  (if-let [rows (env-report-table)]
+    (table rows :style :github-markdown)
+    (println "No defined environment variables!")))
 
 
 (defn -main
