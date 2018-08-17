@@ -1,6 +1,7 @@
 (ns envoy.tools-test
   (:require
     [clojure.test :refer :all]
+    [envoy.check-test :refer [behaved?]]
     [envoy.core :as envoy :refer [defenv]]
     [envoy.tools :as tools]))
 

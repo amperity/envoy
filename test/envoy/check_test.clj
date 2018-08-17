@@ -1,7 +1,26 @@
 (ns envoy.check-test
   (:require
     [clojure.test :refer :all]
-    [envoy.check :refer :all]))
+    [envoy.check :refer :all])
+  (:import
+    clojure.lang.ExceptionInfo))
+
+
+(defmacro behaved?
+  [behavior setting expr]
+  `(let [behaved# (atom nil)
+         old-behave!# behave!]
+     (with-redefs [behave!
+                   (fn new-behave!#
+                     [& args#]
+                     (if (>= 3 (count args#))
+                       (apply old-behave!# args#)
+                       (do (reset! behaved# args#)
+                           nil)))]
+       ~expr
+       (when (is @behaved# ~(str "Behavior " behavior " triggered"))
+         (is ~behavior (first @behaved#))
+         (is ~setting (second @behaved#))))))
 
 
 (deftest behavior-types-var
