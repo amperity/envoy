@@ -7,7 +7,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-...
+### Added
+- Add a `:parser` field to `defenv` that sets a custom function as the
+  value parser.
+
+### Fixed
+- Fixed bug preventing `EnvironmentMap` from being used with `find`
+  and `select-keys`.
 
 ## [0.3.1] - 2017-02-02
 
