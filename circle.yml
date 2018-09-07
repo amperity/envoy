@@ -1,7 +1,0 @@
-test:
-  override:
-    - lein check
-    - lein test
-    - CLOVERAGE_VERSION=1.0.9 lein coverage
-  post:
-    - cp -r target/coverage/ $CIRCLE_ARTIFACTS/

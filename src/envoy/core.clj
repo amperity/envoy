@@ -20,6 +20,7 @@
    :line number?
    :description string?
    :type types/value-types
+   :parser fn?
    :missing check/behavior-types})
 
 
@@ -113,10 +114,12 @@
   ; Look up variable definition.
   (if-let [definition (get known-vars k)]
     (if (some? v)
-      ; Parse the string value for known types.
-      (if-let [type-key (:type definition)]
-        (types/parse type-key v)
-        v)
+      ; Parse the string value with custom parser or for known types.
+      (or (when-let [parser (:parser definition)]
+            (parser v))
+          (when-let [type-key (:type definition)]
+            (types/parse type-key v))
+          v)
       ; Check if the var has missing behavior.
       (behave! :missing-access (:missing definition)
                "Access to env variable %s which has no value" k))
@@ -225,9 +228,8 @@
 
   (entryAt
     [this k]
-    (let [v (.valAt this k this)]
-      (when-not (identical? this v)
-        (clojure.lang.MapEntry. k v))))
+    (when-some [v (.valAt this k)]
+      (clojure.lang.MapEntry. k v)))
 
   (seq
     [this]
