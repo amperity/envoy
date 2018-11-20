@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Fixed bug (introduced in 0.3.2) causing lookups from `:boolean`
+  variables to return falsey values as strings.
+
 ## [0.3.2] - 2018-09-07
 
 ### Added
