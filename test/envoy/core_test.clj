@@ -23,6 +23,10 @@
   "Specifying a special parsing fn."
   :parser clojure.edn/read-string)
 
+(defenv :envoy-boolean
+  "Testing booleans for truthy/falsey gotchas."
+  :type :boolean)
+
 
 (deftest env-declaration
   (is (contains? env/known-vars :envoy-test))
@@ -37,3 +41,14 @@
   (do
     (env/set-env! :envoy-custom-parser "{:a {:b [\"1\" 2.0 \\3 \" \"]}}")
     (is (= {:a {:b ["1" 2.0 \3 " "]}} (env/env :envoy-custom-parser)))))
+
+(deftest boolean-parsing
+  (is (nil? (env/env :envoy-boolean)))
+  (env/set-env! :envoy-boolean true)
+  (is (true? (env/env :envoy-boolean)))
+  (env/set-env! :envoy-boolean false)
+  (is (false? (env/env :envoy-boolean)))
+  (env/set-env! :envoy-boolean "true")
+  (is (true? (env/env :envoy-boolean)))
+  (env/set-env! :envoy-boolean "false")
+  (is (false? (env/env :envoy-boolean))))
