@@ -1,4 +1,4 @@
-(defproject amperity/envoy "0.3.2-SNAPSHOT"
+(defproject amperity/envoy "0.3.4-SNAPSHOT"
   :description "Clojure environment configuration tracking."
   :url "https://github.com/amperity/envoy"
   :license {:name "Apache License 2.0"

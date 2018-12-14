@@ -32,6 +32,10 @@
   "Setting warn behavior."
   :missing :warn)
 
+(defenv :envoy-boolean
+  "Testing booleans for truthy/falsey gotchas."
+  :type :boolean)
+
 
 (deftest env-declaration
   (is (contains? env/known-vars :envoy-test))
@@ -57,3 +61,15 @@
   (behaved? :missing-access :warn (env/env :envoy-warn))
   (behaved? :undeclared-access :warn (env/env :never-got-defined))
   (behaved? :undeclared-override :warn (env/set-env! :never-got-defined 1)))
+
+
+(deftest boolean-parsing
+  (is (nil? (env/env :envoy-boolean)))
+  (env/set-env! :envoy-boolean true)
+  (is (true? (env/env :envoy-boolean)))
+  (env/set-env! :envoy-boolean false)
+  (is (false? (env/env :envoy-boolean)))
+  (env/set-env! :envoy-boolean "true")
+  (is (true? (env/env :envoy-boolean)))
+  (env/set-env! :envoy-boolean "false")
+  (is (false? (env/env :envoy-boolean))))
