@@ -11,13 +11,13 @@
   :pedantic? :abort
 
   :plugins
-  [[lein-codox "0.9.5"]
-   [lein-cloverage "1.0.9"]]
+  [[lein-codox "0.10.8"]
+   [lein-cloverage "1.2.2"]]
 
   :dependencies
-  [[org.clojure/clojure "1.9.0" :scope "provided"]
-   [org.clojure/tools.logging "0.4.0"]
-   [environ "1.1.0"]
+  [[org.clojure/clojure "1.10.3" :scope "provided"]
+   [org.clojure/tools.logging "1.2.3"]
+   [environ "1.2.0"]
    [table "0.5.0"]]
 
   :codox
