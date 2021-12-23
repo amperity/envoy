@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## Fixed
+### Changed
 - Update dependency versions. [#12](https://github.com/amperity/envoy/pull/12)
 
 ## [0.3.3] - 2018-11-20
