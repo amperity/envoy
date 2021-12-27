@@ -7,7 +7,7 @@
   :aliases
   {"coverage" ["with-profile" "+test,+coverage" "cloverage"]}
 
-  :deploy-branches ["master"]
+  :deploy-branches ["main"]
   :pedantic? :abort
 
   :plugins
