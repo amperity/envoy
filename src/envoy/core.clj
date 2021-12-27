@@ -67,8 +67,10 @@
   ; Check for previous declarations.
   (when-let [extant (get known-vars env-key)]
     (when (not= (:ns extant) (:ns properties))
-      (log/errorf "Environment variable definition for %s at %s is overriding existing definition from %s"
-                  env-key (declared-location properties) (declared-location extant))))
+      (log/warnf "Environment variable definition for %s at %s is overriding existing definition from %s"
+                 env-key
+                 (declared-location properties)
+                 (declared-location extant))))
   ; Check property schemas.
   (doseq [prop-key (keys properties)]
     (validate-attr! env-key prop-key properties))
