@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file, which
 follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.0.0] - 2021-12-27
+
+First production release! There were no breaking changes, we're just finally
+admitting to ourselves that the library is stable and unlikely to change
+drastically.
 
 ### Changed
 - Update dependency versions. [#12](https://github.com/amperity/envoy/pull/12)
@@ -63,7 +67,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 Initial release.
 
-[Unreleased]: https://github.com/amperity/envoy/compare/0.3.3...HEAD
+[1.0.0]: https://github.com/amperity/envoy/compare/0.3.3...1.0.0
 [0.3.3]: https://github.com/amperity/envoy/compare/0.3.2...0.3.3
 [0.3.2]: https://github.com/amperity/envoy/compare/0.3.1...0.3.2
 [0.3.1]: https://github.com/amperity/envoy/compare/0.3.0...0.3.1
