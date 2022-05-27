@@ -122,8 +122,11 @@
           (types/parse type-key v)
           v))
       (if-let [default (:default definition)]
-        default
-        ; Check if the var has missing behavior.
+        (do
+          (log/debugf "Environment variable %s has no value, using default '%s'"
+                      k default)
+          default)
+        ;; Check if the var has missing behavior.
         (behave! :missing-access (:missing definition)
                  "Access to env variable %s which has no value" k)))
     ;; No definition found for key.
