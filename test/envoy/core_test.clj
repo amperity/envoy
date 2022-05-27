@@ -27,6 +27,11 @@
   "Testing booleans for truthy/falsey gotchas."
   :type :boolean)
 
+(defenv :envoy-default
+  "Variable with default value."
+  :type :decimal
+  :default 1.2)
+
 
 (deftest env-declaration
   (is (contains? env/known-vars :envoy-test))
@@ -52,3 +57,10 @@
   (is (true? (env/env :envoy-boolean)))
   (env/set-env! :envoy-boolean "false")
   (is (false? (env/env :envoy-boolean))))
+
+(deftest default-value-handling
+  (is (= 1.2 (env/env :envoy-default)))
+  (env/set-env! :envoy-default 1.3)
+  (is (= 1.3 (env/env :envoy-default)))
+  (env/set-env! :envoy-default nil)
+  (is (= 1.2 (env/env :envoy-default))))

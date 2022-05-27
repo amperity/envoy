@@ -21,6 +21,7 @@
    :description string?
    :type types/value-types
    :parser fn?
+   :default any?
    :missing check/behavior-types})
 
 
@@ -122,9 +123,11 @@
         (if-let [type-key (:type definition)]
           (types/parse type-key v)
           v))
-      ; Check if the var has missing behavior.
-      (behave! :missing-access (:missing definition)
-               "Access to env variable %s which has no value" k))
+      (if-let [default (:default definition)]
+        default
+        ; Check if the var has missing behavior.
+        (behave! :missing-access (:missing definition)
+                 "Access to env variable %s which has no value" k)))
     ; No definition found for key.
     (do
       (behave! :undeclared-access "Access to undeclared env variable %s" k)
