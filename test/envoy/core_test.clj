@@ -1,6 +1,7 @@
 (ns envoy.core-test
   (:require
-    [clojure.test :refer :all]
+    [clojure.edn :as edn]
+    [clojure.test :refer [deftest is]]
     [envoy.core :as env :refer [defenv]]))
 
 
@@ -25,7 +26,7 @@
 
 (defenv :envoy-custom-parser
   "Specifying a special parsing fn."
-  :parser clojure.edn/read-string)
+  :parser edn/read-string)
 
 
 (defenv :envoy-boolean

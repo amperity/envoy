@@ -1,7 +1,6 @@
 (ns envoy.core
   "Core environment handling namespace."
   (:require
-    [clojure.string :as str]
     [clojure.tools.logging :as log]
     [environ.core :as environ]
     [envoy.check :as check :refer [behave!]]

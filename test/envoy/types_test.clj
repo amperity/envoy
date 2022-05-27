@@ -1,6 +1,6 @@
 (ns envoy.types-test
   (:require
-    [clojure.test :refer :all]
+    [clojure.test :refer [are deftest is testing]]
     [envoy.types :as types]))
 
 

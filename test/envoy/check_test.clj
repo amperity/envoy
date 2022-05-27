@@ -1,7 +1,7 @@
 (ns envoy.check-test
   (:require
-    [clojure.test :refer :all]
-    [envoy.check :refer :all]))
+    [clojure.test :refer [deftest is testing]]
+    [envoy.check :refer [behave! behavior-types behaviors set-behavior!]]))
 
 
 (deftest behavior-types-var
