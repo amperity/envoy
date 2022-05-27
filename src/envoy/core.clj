@@ -123,8 +123,8 @@
           v))
       (if-let [default (:default definition)]
         (do
-          (log/debugf "Environment variable %s has no value, using default '%s'"
-                      k default)
+          (log/infof "Environment variable %s has no value, using default '%s'"
+                     k default)
           default)
         ;; Check if the var has missing behavior.
         (behave! :missing-access (:missing definition)
