@@ -134,6 +134,7 @@ Variables can be declared using the `defenv` macro or its helper function
 | `:line`        | Line number of the definition in the source file. |
 | `:description` | Human-readable description of the variable. |
 | `:type`        | Value type to parse the variable as. See below. |
+| `:default`     | Default value, cannot be set with `:missing` and must match `:type`. |
 | `:missing`     | Behavior if the variable is accessed with no configured value. |
 
 The first three are added automatically as part of the `defenv` macro.

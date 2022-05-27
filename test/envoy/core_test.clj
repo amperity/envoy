@@ -8,24 +8,30 @@
   "Test environment variable."
   :type :integer)
 
+
 (defenv :envoy-bad-type
   "Variable with a bad type."
   :type :foo)
+
 
 (defenv :envoy-ex-schema
   "Variable with attribute not in default schema."
   :secret true)
 
+
 (defenv :envoy-bad-type
   "Re-declaring a variable.")
+
 
 (defenv :envoy-custom-parser
   "Specifying a special parsing fn."
   :parser clojure.edn/read-string)
 
+
 (defenv :envoy-boolean
   "Testing booleans for truthy/falsey gotchas."
   :type :boolean)
+
 
 (defenv :envoy-default
   "Variable with default value."
@@ -39,6 +45,7 @@
   (is (= :integer (get-in env/known-vars [:envoy-test :type])))
   (is (= 'envoy.core-test (get-in env/known-vars [:envoy-test :ns]))))
 
+
 (deftest parser-declaration
   (do
     (env/set-env! :envoy-custom-parser "{:a 1}")
@@ -46,6 +53,7 @@
   (do
     (env/set-env! :envoy-custom-parser "{:a {:b [\"1\" 2.0 \\3 \" \"]}}")
     (is (= {:a {:b ["1" 2.0 \3 " "]}} (env/env :envoy-custom-parser)))))
+
 
 (deftest boolean-parsing
   (is (nil? (env/env :envoy-boolean)))
@@ -57,6 +65,7 @@
   (is (true? (env/env :envoy-boolean)))
   (env/set-env! :envoy-boolean "false")
   (is (false? (env/env :envoy-boolean))))
+
 
 (deftest default-value-handling
   (is (= 1.2 (env/env :envoy-default)))

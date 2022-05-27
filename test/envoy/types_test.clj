@@ -22,9 +22,9 @@
     (is (= :foo/bar (types/parse :keyword "foo/bar"))))
   (testing "boolean"
     (are [v] (true? (types/parse :boolean v))
-         true "1" "t" "true" "y" "yes")
+      true "1" "t" "true" "y" "yes")
     (are [v] (false? (types/parse :boolean v))
-         false "0" "f" "false" "n" "no")
+      false "0" "f" "false" "n" "no")
     (is (false? (types/parse :boolean ""))
         "empty string parses as false")
     (is (true? (types/parse :boolean "foo"))
