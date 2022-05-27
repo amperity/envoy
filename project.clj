@@ -15,8 +15,8 @@
    [lein-cloverage "1.2.2"]]
 
   :dependencies
-  [[org.clojure/clojure "1.10.3" :scope "provided"]
-   [org.clojure/tools.logging "1.2.3"]
+  [[org.clojure/clojure "1.11.1" :scope "provided"]
+   [org.clojure/tools.logging "1.2.4"]
    [environ "1.2.0"]
    [table "0.5.0"]]
 
