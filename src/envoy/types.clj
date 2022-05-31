@@ -45,17 +45,17 @@
     (let [tester (type-predicates type-key)
           parser (type-parsers type-key)]
       (cond
-        ; Value already has the right type.
+        ;; Value already has the right type.
         (and tester (tester value))
-          value
-        ; Value is not a string, so we can't parse it.
+        value
+        ;; Value is not a string, so we can't parse it.
         (not (string? value))
-          (throw (ex-info (str "Cannot parse non-string value to " (name type-key))
-                          {:type type-key, :value value}))
-        ; Parse value with parsing function.
+        (throw (ex-info (str "Cannot parse non-string value to " (name type-key))
+                        {:type type-key, :value value}))
+        ;; Parse value with parsing function.
         parser
-          (parser value)
-        ; No reasonable approach, so throw an error.
+        (parser value)
+        ;; No reasonable approach, so throw an error.
         :else
-          (throw (ex-info (str "Cannot parse value without parsing function for " (name type-key))
-                          {:type type-key, :value value}))))))
+        (throw (ex-info (str "Cannot parse value without parsing function for " (name type-key))
+                        {:type type-key, :value value}))))))

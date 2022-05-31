@@ -1,7 +1,7 @@
 (ns envoy.check
   (:require
-    [clojure.tools.logging :as log]
-    [clojure.string :as str]))
+    [clojure.string :as str]
+    [clojure.tools.logging :as log]))
 
 
 (def behavior-types
