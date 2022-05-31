@@ -7,6 +7,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.1] - 2022-05-31
+
+Just some spring cleaning: dependency version bumps.
+
+### Changed
+
+- Address issue #6, default value. [#11](https://github.com/amperity/envoy/pull/11)
+- Polish, dependency version bump. [#15](https://github.com/amperity/envoy/pull/15)
+
 ## [1.0.0] - 2021-12-27
 
 First production release! There were no breaking changes, we're just finally
@@ -69,7 +78,8 @@ drastically.
 
 Initial release.
 
-[Unreleased]: https://github.com/amperity/envoy/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/amperity/envoy/compare/1.0.1...HEAD
+[1.0.1]: https://github.com/amperity/envoy/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/amperity/envoy/compare/0.3.3...1.0.0
 [0.3.3]: https://github.com/amperity/envoy/compare/0.3.2...0.3.3
 [0.3.2]: https://github.com/amperity/envoy/compare/0.3.1...0.3.2
