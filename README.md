@@ -14,8 +14,6 @@ Leiningen, add the following to your project dependencies:
 
 [![Clojars Project](https://img.shields.io/clojars/v/amperity/envoy.svg)](https://clojars.org/amperity/envoy)
 
-[![Clojars Project](https://img.shields.io/clojars/v/amperity/envoy.svg)](https://clojars.org/amperity/envoy)
-
 ## Usage
 
 A quick overview of envoy usage:
