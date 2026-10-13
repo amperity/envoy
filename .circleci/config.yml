@@ -1,10 +1,12 @@
-version: 2
+version: 2.1
+
+orbs:
+  codecov: codecov/codecov@6.1.0
 
 jobs:
   build:
-    working_directory: ~/project
     docker:
-      - image: circleci/clojure:lein-2.9.1
+      - image: cimg/clojure:1.12-openjdk-21.0
     steps:
       - checkout
       - restore_cache:
@@ -19,13 +21,13 @@ jobs:
       - run: lein check
       - run: lein test
       - run: lein coverage --codecov
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-{{ checksum "project.clj" }}
       - store_artifacts:
           path: target/coverage
           destination: coverage
-      - run:
-          name: Publish Coverage
-          command: "bash <(curl -s https://codecov.io/bash) -f target/coverage/codecov.json"
+      - codecov/upload:
+          files: target/coverage/codecov.json
+
+workflows:
+  build:
+    jobs:
+      - build
