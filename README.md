@@ -1,7 +1,7 @@
 Envoy
 =====
 
-[![envoy cljdoc](https://cljdoc.xyz/badge/amperity/envoy)](https://cljdoc.xyz/d/amperity/envoy/CURRENT)
+[![envoy cljdoc](https://cljdoc.org/badge/amperity/envoy)](https://cljdoc.org/d/amperity/envoy/CURRENT)
 
 A Clojure library compatible with [environ](https://github.com/weavejester/environ)
 which adds tracking of which environment variables are referenced, whitelisting,
